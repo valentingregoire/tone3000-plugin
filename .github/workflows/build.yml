@@ -9,8 +9,7 @@ name: Build Plugin
 # Dispatch only. A signed three-platform run (notarization, PACE, Azure)
 # is too expensive to fire on every PR. Restrict the `builds` environment
 # to required reviewers if you want an admin gate before a runner starts.
-on:
-  workflow_dispatch:
+on: push
 
 # Least-privilege GITHUB_TOKEN: nothing in this workflow writes back to the
 # repo (artifact upload and the sccache/actions cache use the runtime token,
