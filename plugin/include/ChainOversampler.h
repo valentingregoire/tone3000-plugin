@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cassert>
+#include <cstddef>
 #include <vector>
 
 // Chain oversampler: power-of-two rate raiser around the chain stage
@@ -159,8 +160,8 @@ private:
     int frames = numFrames;
     float* const* stageIn = in;
     for (int stage = 0; stage < stages; ++stage) {
-      float* const* stageOut = stage == stages - 1 ? finalOut
-                                                   : workBuffers[1 + stage % 2].pointers.data();
+      float* const* stageOut =
+          stage == stages - 1 ? finalOut : workBuffers[1 + stage % 2].pointers.data();
       for (int ch = 0; ch < numChannels; ++ch)
         upsampleStage(stage, ch, stageIn[ch], stageOut[ch], frames);
       stageIn = stageOut;
@@ -173,8 +174,7 @@ private:
     int frames = numFrames;
     float* const* stageIn = in;
     for (int stage = stages - 1; stage >= 0; --stage) {
-      float* const* stageOut =
-          stage == 0 ? finalOut : workBuffers[1 + stage % 2].pointers.data();
+      float* const* stageOut = stage == 0 ? finalOut : workBuffers[1 + stage % 2].pointers.data();
       for (int ch = 0; ch < numChannels; ++ch)
         decimateStage(stage, ch, stageIn[ch], stageOut[ch], frames);
       stageIn = stageOut;
@@ -182,8 +182,11 @@ private:
     }
   }
 
-  static float processBranch(float x, const std::array<float, kSections>& coeffs,
-                             BranchStates& states, int stage, int channel) {
+  static float processBranch(float x,
+                             const std::array<float, kSections>& coeffs,
+                             BranchStates& states,
+                             int stage,
+                             int channel) {
     AllpassState* s = &states[(static_cast<size_t>(stage) * kChannels + channel) * kSections];
     float y = x;
     for (int i = 0; i < kSections; ++i)
